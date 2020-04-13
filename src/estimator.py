@@ -1,3 +1,5 @@
+import unittest
+
 class Impact(object):
     __currentlyInfected = 0
     __projected_infections = 0
@@ -88,6 +90,8 @@ class SevereImpact(Impact):
         return dollarsInFlight
 
 
+
+
 def result_toJson(data):
     import json
     impact = Impact(data)
@@ -145,8 +149,39 @@ def result_toXml(data):
     return data
 
 
-if __name__ == "__main__":
+class TestEstimator(unittest.TestCase):
+    data = {
+                "region": {
+                        "name": "Africa",
+                        "avgAge": 19.7,
+                        "avgDailyIncomeInUSD": 5,
+                        "avgDailyIncomePopulation": 0.71
+                },
+                "periodType": "days",
+                "timeToElapse": 58,
+                "reportedCases": 674,
+                "population": 66622705,
+                "totalHospitalBeds": 1380614
+            }
+    
+    impact = Impact(data)
 
+    def test_impactInfectionByRequestedTime(self):
+        currentlyInfected = impact.infectionByRequestedTime()
+        self.assertEqual(currentlyInfected,200)
+
+    def test_impactSevereCasesByRequestedTime(self):
+        severCasesByRequestedTime = impact.severeCasesByRequestedTime()
+        self.assertEqual(severCasesByRequestedTime, 3345454)
+
+    if __name__ == "__main__":
+        unittest.main()
+    
+
+
+
+if __name__ == "__main__":
+   
     data = {
                 "region": {
                         "name": "Africa",
@@ -163,6 +198,5 @@ if __name__ == "__main__":
 
     impact = Impact(data)
     severe_impact = SevereImpact(data)
-
-    print (result_toXml(data))
-    print (result_toJson(data))
+    # print (result_toXml(data))
+    # print (result_toJson(data))
