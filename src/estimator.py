@@ -1,14 +1,21 @@
 class Impact(object):
     __currentlyInfected = 0
     __projected_infections = 0
+    __severeCasesByRequestedTime = 0
+    __data = {}
 
     def __init__(self, data):
         if data is not None:
+            self.data = data
             self.periodType = data["periodType"]
             self.timeToElapse = data["timeToElapse"]
             self.reportedCases = data["reportedCases"]
             self.population = data["population"]
             self.totalHospitalBeds = data["totalHospitalBeds"]
+            self.region_name = data["region"]["name"]
+            self.region_avgAge = data["region"]["avgAge"]
+            self.region_avgDailyIncomeInUSD = data["region"]["avgDailyIncomeInUSD"]
+            self.region_avgDailyIncomePopulation = data["region"]["avgDailyIncomePopulation"]
 
     def covid19ImpactEstimator(self):
         self.__currentlyInfected = self.reportedCases * 10
@@ -28,10 +35,25 @@ class Impact(object):
         self.__projected_infections = self.__currentlyInfected * (2**power)
         return self.__projected_infections
 
-    def hospitalBedsByRequestedTime(self,totalHospitalBeds):
-        severeCasesByRequestedTime = 0.15 * self.infectionByRequestedTime()
-        available_beds = totalHospitalBeds - severeCasesByRequestedTime
-        return available_beds
+    def severeCasesByRequestedTime(self):
+        self.__severeCasesByRequestedTime = 0.15 * self.infectionByRequestedTime()
+        return self.__severeCasesByRequestedTime
+
+    def availableHospitalBedsByRequestedTime(self):
+        hospitalBedsByRequestedTime = (0.35 * self.totalHospitalBeds) - self.severeCasesByRequestedTime()
+        return hospitalBedsByRequestedTime
+
+    def casesForICUByRequestedTime(self):
+        casesForICUByRequestedTime = 0.05 * self.infectionByRequestedTime()
+        return casesForICUByRequestedTime
+
+    def casesForVentilatorsByRequestedTime(self):
+        casesForVentilatorsByRequestedTime = 0.02 * self.infectionByRequestedTime()
+        return casesForVentilatorsByRequestedTime
+
+    def dollarsInFlight(self):
+        dollarsInFlight = int((self.infectionByRequestedTime() * self.region_avgDailyIncomePopulation * self.region_avgDailyIncomeInUSD)// self.timeToElapse)
+        return dollarsInFlight
 
 
 class SevereImpact(Impact):
@@ -44,6 +66,83 @@ class SevereImpact(Impact):
         power = self.timeToElapse//3
         self.__projected_infections = self.__currentlyInfected * (2**power)
         return self.__projected_infections
+
+    def severeCasesByRequestedTime(self):
+        self.__severeCasesByRequestedTime = 0.15 * self.infectionByRequestedTime()
+        return self.__severeCasesByRequestedTime
+
+    def availableHospitalBedsByRequestedTime(self):
+        hospitalBedsByRequestedTime = (0.35 * self.totalHospitalBeds) - self.severeCasesByRequestedTime()
+        return hospitalBedsByRequestedTime
+
+    def casesForICUByRequestedTime(self):
+        casesForICUByRequestedTime = 0.05 * self.infectionByRequestedTime()
+        return casesForICUByRequestedTime
+
+    def casesForVentilatorsByRequestedTime(self):
+        casesForVentilatorsByRequestedTime = 0.02 * self.infectionByRequestedTime()
+        return casesForVentilatorsByRequestedTime
+
+    def dollarsInFlight(self):
+        dollarsInFlight = int((self.infectionByRequestedTime() * self.region_avgDailyIncomePopulation * self.region_avgDailyIncomeInUSD)// self.timeToElapse)
+        return dollarsInFlight
+
+
+def result_toJson(data):
+    import json
+    impact = Impact(data)
+    severe_impact = SevereImpact(data)
+
+    data = {
+        "data" : data,
+        "Impact":{
+            "currentlyInfected" : impact.infectionByRequestedTime(),
+            "severeCasesByRequestedTime" : impact.severeCasesByRequestedTime(),
+            "hospitalBedsByRequestedTime" : impact.availableHospitalBedsByRequestedTime(),
+            "casesForICUByRequestedTime" : impact.casesForICUByRequestedTime(),
+            "casesForVentilatorsByRequestedTime" : impact.casesForVentilatorsByRequestedTime(),
+            "dollarsInFlight" : impact.dollarsInFlight()
+        },
+        "SevereImpact":{
+            "currentlyInfected" : severe_impact.infectionByRequestedTime(),
+            "severeCasesByRequestedTime" : severe_impact.severeCasesByRequestedTime(),
+            "hospitalBedsByRequestedTime" : severe_impact.availableHospitalBedsByRequestedTime(),
+            "casesForICUByRequestedTime" : severe_impact.casesForICUByRequestedTime(),
+            "casesForVentilatorsByRequestedTime" : severe_impact.casesForVentilatorsByRequestedTime(),
+            "dollarsInFlight" : severe_impact.dollarsInFlight()
+        }
+    }
+    # convert into JSON:
+    data = json.dumps(data)
+    return data
+
+def result_toXml(data):
+    from dicttoxml import dicttoxml
+    impact = Impact(data)
+    severe_impact = SevereImpact(data)
+
+    data = {
+        "data" : data,
+        "Impact":{
+            "currentlyInfected" : impact.infectionByRequestedTime(),
+            "severeCasesByRequestedTime" : impact.severeCasesByRequestedTime(),
+            "hospitalBedsByRequestedTime" : impact.availableHospitalBedsByRequestedTime(),
+            "casesForICUByRequestedTime" : impact.casesForICUByRequestedTime(),
+            "casesForVentilatorsByRequestedTime" : impact.casesForVentilatorsByRequestedTime(),
+            "dollarsInFlight" : impact.dollarsInFlight()
+        },
+        "SevereImpact":{
+            "currentlyInfected" : severe_impact.infectionByRequestedTime(),
+            "severeCasesByRequestedTime" : severe_impact.severeCasesByRequestedTime(),
+            "hospitalBedsByRequestedTime" : severe_impact.availableHospitalBedsByRequestedTime(),
+            "casesForICUByRequestedTime" : severe_impact.casesForICUByRequestedTime(),
+            "casesForVentilatorsByRequestedTime" : severe_impact.casesForVentilatorsByRequestedTime(),
+            "dollarsInFlight" : severe_impact.dollarsInFlight()
+        }
+    }
+    # convert into Xml:
+    data = dicttoxml(data)
+    return data
 
 
 if __name__ == "__main__":
@@ -64,5 +163,6 @@ if __name__ == "__main__":
 
     impact = Impact(data)
     severe_impact = SevereImpact(data)
-    print ("impact: " , impact.infectionByRequestedTime(),
-    "\nSevereImpact: " , severe_impact.infectionByRequestedTime())
+
+    print (result_toXml(data))
+    print (result_toJson(data))
