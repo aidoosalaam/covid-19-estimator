@@ -1,0 +1,6 @@
+GET	/api/v1/on-covid-19/log	200	0ms
+127.0.0.1 - - [14/Apr/2020 17:56:03] "[37mGET /api/v1/on-covid-19/log HTTP/1.1[0m" 200 -
+POST	/api/v1/on-covid-19	200	0ms
+127.0.0.1 - - [14/Apr/2020 17:56:12] "[37mPOST /api/v1/on-covid-19 HTTP/1.1[0m" 200 -
+GET	/api/v1/on-covid-19/log	200	0ms
+127.0.0.1 - - [14/Apr/2020 17:56:16] "[37mGET /api/v1/on-covid-19/log HTTP/1.1[0m" 200 -

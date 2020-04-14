@@ -37,3 +37,6 @@ POST	/api/v1/on-covid-19/None	200	0ms
 POST	/api/v1/on-covid-19/	200	0ms
 POST	/api/v1/on-covid-19/json	200	0ms
 POST	/api/v1/on-covid-19	200	0ms
+GET	/api/v1/on-covid-19/log	200	0ms
+POST	/api/v1/on-covid-19	200	0ms
+GET	/api/v1/on-covid-19/log	200	0ms
