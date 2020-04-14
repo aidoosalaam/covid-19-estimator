@@ -1,6 +1,0 @@
-POST	/api/v1/on-covid-19/json	200	0ms
-127.0.0.1 - - [14/Apr/2020 15:41:31] "[37mPOST /api/v1/on-covid-19/json HTTP/1.1[0m" 200 -
-GET	/api/v1/on-covid-19/log	200	0ms
-127.0.0.1 - - [14/Apr/2020 15:41:34] "[37mGET /api/v1/on-covid-19/log HTTP/1.1[0m" 200 -
-GET	/api/v1/on-covid-19/log	200	0ms
-127.0.0.1 - - [14/Apr/2020 15:41:35] "[37mGET /api/v1/on-covid-19/log HTTP/1.1[0m" 200 -
